@@ -17,7 +17,6 @@
 package com.sb.monbazar.controlers;
 
 import static com.googlecode.objectify.ObjectifyService.ofy;
-import static com.sb.monbazar.core.model.ItemBuilder.anItem;
 
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
@@ -26,7 +25,6 @@ import com.google.appengine.repackaged.com.google.api.client.util.Lists;
 import com.google.common.base.Strings;
 import com.googlecode.objectify.ObjectifyService;
 import com.sb.monbazar.core.model.Item;
-import com.sb.monbazar.core.model.ItemBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -42,8 +40,8 @@ public class TestServlet extends HttpServlet {
 
 		List<Item> items = ofy().load().type(Item.class).limit(5).list();
 		if (items.isEmpty()) {
-			ofy().save().entity(anItem().title("Constantine - Dangerous habbits").build()).now();
-			ofy().save().entity(anItem().title("Hamilton - pandora tome 3").build()).now();
+			ofy().save().entity(new Item().title("Constantine - Dangerous habbits")).now();
+			ofy().save().entity(new Item().title("Hamilton - pandora tome 3")).now();
 			items = ofy().load().type(Item.class).limit(5).list();
 		}
 		
