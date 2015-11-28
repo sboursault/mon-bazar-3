@@ -12,16 +12,10 @@ var bookControllers = angular.module('bookControllers', []);
 // with routing
 bookControllers.controller('BookListController', [ '$scope', '$http',
 		function($scope, $http) {
-			$http.get('rest/books').success(function(data) {
+			$http.get('api/books').success(function(data) {
 				$scope.books = data;
 			});
 		} ]);
-/*
- * bookControllers.controller('BookDetailController', [ '$scope',
- * '$routeParams', '$http', function($scope, $routeParams, $http) {
- * $http.get('rest/book/' + $routeParams.bookId).success(function(data) {
- * $scope.book = data; }); } ]);/
- */
 
 bookControllers.controller('BookDetailController', [ '$scope', '$routeParams',
 		'Book', function($scope, $routeParams, Book) {
@@ -41,10 +35,3 @@ bookControllers.controller('BookDetailController', [ '$scope', '$routeParams',
 			};
 		} ]);
 
-// GET /books -> list of book snapshots (with name and link)
-// GET /books/?title=abc -> list of book snapshots containing abc in their title
-// (with name and link)
-// POST /book -> create book
-// GET /book/123 -> get book
-// PUT /book/123 -> update book
-// DELETE /book/123 -> update book

@@ -21,7 +21,7 @@ import com.sb.monbazar.resources.representations.Book;
 @Path("book")
 public class BookResource {
 
-	public final static String PATH = "/rest/book/";
+	public final static String PATH = "/api/book/";
 
 	@GET
 	@Path("{id}")

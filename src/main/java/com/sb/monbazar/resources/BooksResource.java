@@ -39,19 +39,23 @@
  */
 package com.sb.monbazar.resources;
 
+import java.io.IOException;
 import java.util.List;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.googlecode.objectify.ObjectifyService;
 import com.sb.monbazar.controlers.OfyHelper;
 import com.sb.monbazar.core.model.Item;
+import com.sb.monbazar.resources.converters.ItemConverter;
 import com.sb.monbazar.resources.converters.ItemListConverter;
+import com.sb.monbazar.resources.representations.Book;
 import com.sb.monbazar.resources.representations.BookSummary;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 // Plain old Java Object it does not extend as class or implements 
 // an interface
@@ -72,7 +76,7 @@ public class BooksResource {
 //	  @GET @Path("{id}")
 //	  String getWidget(@PathParam("id") String id) {...}
 	
-	public final static String PATH = "/rest/books/";
+	public final static String PATH = "/api/books/";
 	
 	// This method is called if TEXT_PLAIN is request
 	@GET
@@ -104,6 +108,63 @@ public class BooksResource {
 				+ "<body>" + text() + "</body>" + "</html> ";
 	}
 
+	@GET
+	@Path("{id}")
+	public String text(@PathParam("id") Long id) {
+		checkArgument(id != null, "missing parameter : id");
+		return getBook(id).toString();
+	}
+
+	@GET
+	@Path("{id}")
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Book get(@PathParam("id") Long id) {
+		checkArgument(id != null, "missing parameter : id");
+		return getBook(id);
+	}
+
+	@GET
+	@Path("/{id}")
+	@Produces(MediaType.TEXT_HTML)
+	public String html(@PathParam("id") Long id) {
+		checkArgument(id != null, "missing parameter : id");
+		return "<html> " + "<title>books</title>" + "<body>" + text(id)
+				+ "</body>" + "</html> ";
+	}
+
+	@POST
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Book create(Book entity) throws IOException {
+		checkNotBlank(entity.getTitle(), "invalid property : book.title");
+		return saveBook(entity);
+	}
+
+	@POST
+	@Path("/{id}")
+	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
+	public Book update(Book entity) throws IOException {
+		checkNotBlank(entity.getTitle(), "invalid property : book.title");
+		return saveBook(entity);
+	}
+
+	private Book saveBook(Book entity) {
+//		Item item = BookConverter.from(entity).toItem().user(Dao.SEB);
+//		Item persisted = Dao.INSTANCE.saveOrUpdate(item);
+//		return ItemConverter.from(persisted).toBook();
+		throw new UnsupportedOperationException();
+	}
+
+	private void checkNotBlank(String value, String msg) {
+		Preconditions.checkArgument(value != null && !value.trim().equals(""), msg);
+	}
+
+	private Book getBook(Long id) {
+//		Item item = Dao.INSTANCE.getItem(id);
+		Item item = ObjectifyService.ofy().load().type(Item.class).id(id).now();
+		return ItemConverter.from(item).toBook();
+	}
 	
 	private List<BookSummary> getBookList() {
 //		List<Item> items = Dao.INSTANCE.getItemsFromUser(Dao.SEB);
