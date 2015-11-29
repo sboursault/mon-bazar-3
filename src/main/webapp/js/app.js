@@ -1,7 +1,13 @@
-var bookApp = angular.module('bookApp', [ 'ngRoute', 'bookControllers', 'bookServices' ]);
-// declares a module with its dependencies
+// declare bazarApp module with its dependencies
+var bazarApp = angular.module('bazarApp', [
+    'ngRoute',
+    'bookControllers',
+    'bookServices',
+    "xeditable"
+]);
 
-bookApp.config([ '$routeProvider', function($routeProvider) {
+
+bazarApp.config([ '$routeProvider', function($routeProvider) {
 	$routeProvider.when('/books', {
 		templateUrl : 'partial-templates/book-list.html',
 		controller : 'BookListController'
@@ -18,3 +24,8 @@ bookApp.config([ '$routeProvider', function($routeProvider) {
 		redirectTo : '/books'
 	});
 } ]);
+
+// set theme for xeditable
+bazarApp.run(function(editableOptions) {
+    editableOptions.theme = 'bs3'; // bootstrap3 theme. Can be also 'bs2', 'default'
+});

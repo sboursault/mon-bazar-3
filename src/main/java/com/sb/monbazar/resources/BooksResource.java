@@ -47,35 +47,18 @@ import javax.ws.rs.core.MediaType;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.sb.monbazar.controlers.OfyHelper;
 import com.sb.monbazar.core.model.Item;
-import com.sb.monbazar.resources.converters.ItemConverter;
-import com.sb.monbazar.resources.converters.ItemListConverter;
-import com.sb.monbazar.resources.representations.Book;
-import com.sb.monbazar.resources.representations.BookSummary;
+import com.sb.monbazar.resources.converters.*;
+import com.sb.monbazar.resources.representations.*;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-// Plain old Java Object it does not extend as class or implements 
-// an interface
-
-// The class registers its methods for the HTTP GET request using the @GET annotation. 
-// Using the @Produces annotation, it defines that it can deliver several MIME types,
-// text, XML and HTML. 
-
-// The browser requests per default the HTML MIME type.
-
-//Sets the path to base URL + /hello
-
-// from www.vogella.com/tutorials/REST/article.html
 @Path("books")
 public class BooksResource {
 
-	
-//	  @GET @Path("{id}")
-//	  String getWidget(@PathParam("id") String id) {...}
-	
 	public final static String PATH = "/api/books/";
 	
 	// This method is called if TEXT_PLAIN is request
@@ -92,13 +75,6 @@ public class BooksResource {
 		return getBookList();
 	}
 
-
-	// This method is called if XML is request
-//	@GET
-//	@Produces(MediaType.TEXT_XML)
-//	public String sayXMLHello() {
-//		return "<?xml version=\"1.0\"?>" + "<hello> Hello Jersey" + "</hello>";
-//	}
 
 	// This method is called if HTML is request
 	@GET
@@ -150,10 +126,9 @@ public class BooksResource {
 	}
 
 	private Book saveBook(Book entity) {
-//		Item item = BookConverter.from(entity).toItem().user(Dao.SEB);
-//		Item persisted = Dao.INSTANCE.saveOrUpdate(item);
-//		return ItemConverter.from(persisted).toBook();
-		throw new UnsupportedOperationException();
+		Item item = BookConverter.from(entity).toItem();
+		Key<Item> key = ObjectifyService.ofy().save().entity(item).now();
+		return getBook(key.getId());
 	}
 
 	private void checkNotBlank(String value, String msg) {
@@ -161,16 +136,13 @@ public class BooksResource {
 	}
 
 	private Book getBook(Long id) {
-//		Item item = Dao.INSTANCE.getItem(id);
 		Item item = ObjectifyService.ofy().load().type(Item.class).id(id).now();
 		return ItemConverter.from(item).toBook();
 	}
 	
 	private List<BookSummary> getBookList() {
-//		List<Item> items = Dao.INSTANCE.getItemsFromUser(Dao.SEB);
 		List<Item> items = ObjectifyService.ofy().load().type(Item.class).limit(50).list();
 		return ItemListConverter.from(items).toBookList();
-
 	}
 
 }

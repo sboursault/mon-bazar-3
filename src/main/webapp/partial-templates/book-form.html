@@ -5,14 +5,14 @@
 
 <form class="form-horizontal">
 	<div class="form-group">
-		<label class="col-xs-2 control-label" for="inputAuthor">Titre</label>
+		<label class="col-xs-2 control-label" for="inputAuthor">Title</label>
 		<div class="col-xs-10">
 			<input type="text" id="inputAuthor" class="form-control"
 				ng-model="book.title">
 		</div>
 	</div>
 	<div class="form-group">
-		<label class="col-xs-2 control-label" for="inputAuthor">Auteur</label>
+		<label class="col-xs-2 control-label" for="inputAuthor">Author</label>
 		<div class="col-xs-10">
 			<input type="text" id="inputAuthor" class="form-control"
 				ng-model="book.author">
@@ -21,6 +21,6 @@
 	<div class="form-actions">
 		<a class="btn btn-default" role="button" href="#/books/{{book.id}}"> «
 			Annuler </a>
-		<button type="submit" class="btn btn-primary" ng-click="saveBook()">Enregistrer</button>
+		<button type="submit" class="btn btn-primary" ng-click="updateBook()">Save</button>
 	</div>
 </form>

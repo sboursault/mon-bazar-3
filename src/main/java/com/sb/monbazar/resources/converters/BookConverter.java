@@ -3,7 +3,7 @@ package com.sb.monbazar.resources.converters;
 import com.sb.monbazar.core.model.Item;
 import com.sb.monbazar.resources.representations.Book;
 
-class BookConverter {
+public class BookConverter {
 
 	Book source;
 

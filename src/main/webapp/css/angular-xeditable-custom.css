@@ -1,0 +1,8 @@
+.editable-click, a.editable-click {
+    border-bottom: none;
+    color: inherit;
+}
+
+.editable-click:hover, a.editable-click:hover {
+    border-bottom: none;
+}
