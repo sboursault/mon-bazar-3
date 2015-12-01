@@ -45,74 +45,39 @@ import java.util.List;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
-import com.sb.monbazar.controlers.OfyHelper;
 import com.sb.monbazar.core.model.Item;
 import com.sb.monbazar.resources.converters.*;
 import com.sb.monbazar.resources.representations.*;
+import com.sb.monbazar.utils.Preconditions;
 
-import static com.google.common.base.Preconditions.checkArgument;
 
 @Path("books")
 public class BooksResource {
 
 	public final static String PATH = "/api/books/";
-	
-	// This method is called if TEXT_PLAIN is request
-	@GET
-	@Produces(MediaType.TEXT_PLAIN)
-	public String text() {
-		return Joiner.on(", ").join(getBookList());
-	}
 
-	// Application integration
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public List<BookSummary> list() {
-		return getBookList();
-	}
-
-
-	// This method is called if HTML is request
-	@GET
-	@Produces(MediaType.TEXT_HTML)
-	public String html() {
-		return "<html> " + "<title>books</title>"
-				+ "<body>" + text() + "</body>" + "</html> ";
-	}
-
-	@GET
-	@Path("{id}")
-	public String text(@PathParam("id") Long id) {
-		checkArgument(id != null, "missing parameter : id");
-		return getBook(id).toString();
+	public BookList getAllBooks() {
+		List<Item> items = ObjectifyService.ofy().load().type(Item.class).limit(50).list();
+		return ItemListConverter.from(items).toBookList();
 	}
 
 	@GET
 	@Path("{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Book get(@PathParam("id") Long id) {
-		checkArgument(id != null, "missing parameter : id");
-		return getBook(id);
-	}
-
-	@GET
-	@Path("/{id}")
-	@Produces(MediaType.TEXT_HTML)
-	public String html(@PathParam("id") Long id) {
-		checkArgument(id != null, "missing parameter : id");
-		return "<html> " + "<title>books</title>" + "<body>" + text(id)
-				+ "</body>" + "</html> ";
+	public Book getBook(@PathParam("id") Long id) {
+		Item item = ObjectifyService.ofy().load().type(Item.class).id(id).now();
+		return ItemConverter.from(item).toBook();
 	}
 
 	@POST
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Book create(Book entity) throws IOException {
-		checkNotBlank(entity.getTitle(), "invalid property : book.title");
+		Preconditions.checkNotBlank(entity.getTitle(), "invalid property : book.title");
 		return saveBook(entity);
 	}
 
@@ -121,7 +86,7 @@ public class BooksResource {
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Book update(Book entity) throws IOException {
-		checkNotBlank(entity.getTitle(), "invalid property : book.title");
+		Preconditions.checkNotBlank(entity.getTitle(), "invalid property : book.title");
 		return saveBook(entity);
 	}
 
@@ -130,19 +95,4 @@ public class BooksResource {
 		Key<Item> key = ObjectifyService.ofy().save().entity(item).now();
 		return getBook(key.getId());
 	}
-
-	private void checkNotBlank(String value, String msg) {
-		Preconditions.checkArgument(value != null && !value.trim().equals(""), msg);
-	}
-
-	private Book getBook(Long id) {
-		Item item = ObjectifyService.ofy().load().type(Item.class).id(id).now();
-		return ItemConverter.from(item).toBook();
-	}
-	
-	private List<BookSummary> getBookList() {
-		List<Item> items = ObjectifyService.ofy().load().type(Item.class).limit(50).list();
-		return ItemListConverter.from(items).toBookList();
-	}
-
 }

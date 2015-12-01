@@ -9,7 +9,7 @@ var bookControllers = angular.module('bookControllers', []);
 // with routing
 bookControllers.controller('BookListController', [ '$scope', '$http',
         function($scope, $http) {
-            $http.get('api/books').success(function(data) { $scope.books = data });
+            $http.get('api/books').success(function(data) { $scope.books = data.books });
         } ]);
 
 bookControllers.controller('BookDetailController', [ '$scope', '$routeParams',

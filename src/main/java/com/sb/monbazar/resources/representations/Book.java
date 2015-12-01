@@ -1,5 +1,8 @@
 package com.sb.monbazar.resources.representations;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement // allows jersey to marshall this to xml
 public class Book {
 
 	private Long id;

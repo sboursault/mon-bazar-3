@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.sb.monbazar.core.model.Item;
 import com.sb.monbazar.resources.BooksResource;
-import com.sb.monbazar.resources.representations.BookSummary;
+import com.sb.monbazar.resources.representations.BookList;
 
 public class ItemListConverter {
 
@@ -20,19 +20,21 @@ public class ItemListConverter {
 		return new ItemListConverter(items);
 	}
 
-	public List<BookSummary> toBookList() {
-
-		List<BookSummary> targetList = new ArrayList<BookSummary>();
+	public BookList toBookList() {
+		BookList targetList = new BookList();
 		for (Item item : items) {
-			BookSummary target = new BookSummary();
-			target.setId(item.getId());
-			target.setTitle(item.getTitle());
-			target.setAuthor(item.getAuthor());
-			target.setUri(BooksResource.PATH + item.getId());
-			targetList.add(target);
+			targetList.add(convertToBookSummary(item));
 		}
 		return targetList;
+	}
 
+	private BookList.BookSummary convertToBookSummary(Item item) {
+		BookList.BookSummary target = new BookList.BookSummary();
+		target.setId(item.getId());
+		target.setTitle(item.getTitle());
+		target.setAuthor(item.getAuthor());
+		target.setUri(BooksResource.PATH + item.getId());
+		return target;
 	}
 }
  
