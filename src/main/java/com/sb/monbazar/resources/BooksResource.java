@@ -40,10 +40,14 @@
 package com.sb.monbazar.resources;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
@@ -66,7 +70,7 @@ public class BooksResource {
 	}
 
 	@GET
-	@Path("{id}")
+	@Path("/{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Book getBook(@PathParam("id") Long id) {
 		Item item = ObjectifyService.ofy().load().type(Item.class).id(id).now();
@@ -75,17 +79,18 @@ public class BooksResource {
 
 	@POST
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Book create(Book entity) throws IOException {
+	public Response create(Book entity, @Context UriInfo uriInfo) throws IOException {
 		Preconditions.checkNotBlank(entity.getTitle(), "invalid property : book.title");
-		return saveBook(entity);
+		Book book = saveBook(entity);
+		URI newUri = URI.create(uriInfo.getPath() + "/" + book.getId());
+		return Response.created(newUri).build();
 	}
 
-	@POST
+	@PUT
 	@Path("/{id}")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Book update(Book entity) throws IOException {
+		Preconditions.checkNotNull(entity.getId(), "invalid property : book.id");
 		Preconditions.checkNotBlank(entity.getTitle(), "invalid property : book.title");
 		return saveBook(entity);
 	}

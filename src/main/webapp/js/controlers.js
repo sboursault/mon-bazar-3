@@ -23,8 +23,14 @@ bookControllers.controller('BookDetailController', [ '$scope', '$routeParams',
 				// new book
 				$scope.book = new Book();
 			}
+			$scope.createBook = function() {
+				$scope.book.$create({}, function(book) {
+				    //TODO : get the id from the response header
+					$(location).attr('href', '#/books/' + book.id);
+				});
+			};
 			$scope.updateBook = function() {
-				$scope.book.$save({}, function(book) {
+				$scope.book.$update({}, function(book) {
 					$(location).attr('href', '#/books/' + book.id);
 				});
 			};
