@@ -1,6 +1,7 @@
 package com.sb.monbazar.resources.representations;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 
 @XmlRootElement // allows jersey to marshall this to xml
 public class Book {
@@ -8,6 +9,7 @@ public class Book {
 	private Long id;
 	private String title = "";
 	private String author = "";
+	private URI uri;
 
 	public Long getId() {
 		return id;
@@ -32,7 +34,13 @@ public class Book {
 	public void setAuthor(String author) {
 		this.author = author;
 	}
-	
+
+	public URI getUri() {
+		return uri;
+	}
+
+	public void setUri(URI uri) { this.uri = uri; }
+
 	@Override
 	public String toString() {
 		return "Book [id=" + id + ", title=" + title + "]";

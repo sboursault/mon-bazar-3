@@ -1,26 +1,39 @@
 package com.sb.monbazar.resources.converters;
 
-import java.util.ArrayList;
+import java.net.URI;
 import java.util.List;
 
 import com.sb.monbazar.core.model.Item;
 import com.sb.monbazar.resources.BooksResource;
 import com.sb.monbazar.resources.representations.BookList;
+import com.sb.monbazar.utils.Preconditions;
 
-public class ItemListConverter {
+import javax.ws.rs.core.UriBuilder;
 
-	List<Item> items;
+public class BookListBuilder {
 
-	public ItemListConverter(List<Item> items) {
+	private List<Item> items;
+	private URI baseUri;
+
+	public BookListBuilder(List<Item> items) {
 		super();
 		this.items = items;
 	}
 
-	public static ItemListConverter from(List<Item> items) {
-		return new ItemListConverter(items);
+	public static BookListBuilder from(List<Item> items) {
+		return new BookListBuilder(items);
 	}
 
-	public BookList toBookList() {
+
+	public BookListBuilder baseUri(URI baseUri) {
+		this.baseUri = baseUri;
+		return this;
+	}
+
+	public BookList build() {
+
+		Preconditions.checkNotNull(baseUri, "baseUri must be set");
+
 		BookList targetList = new BookList();
 		for (Item item : items) {
 			targetList.add(convertToBookSummary(item));
@@ -33,7 +46,9 @@ public class ItemListConverter {
 		target.setId(item.getId());
 		target.setTitle(item.getTitle());
 		target.setAuthor(item.getAuthor());
-		target.setUri(BooksResource.PATH + item.getId());
+		target.setUri(UriBuilder.fromUri(baseUri).
+				path("{id}").
+				build(item.getId()));
 		return target;
 	}
 }

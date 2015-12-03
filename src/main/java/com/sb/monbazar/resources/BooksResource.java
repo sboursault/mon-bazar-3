@@ -40,14 +40,10 @@
 package com.sb.monbazar.resources;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.*;
 
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
@@ -60,13 +56,13 @@ import com.sb.monbazar.utils.Preconditions;
 @Path("books")
 public class BooksResource {
 
-	public final static String PATH = "/api/books/";
+	@Context UriInfo uriInfo;
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public BookList getAllBooks() {
 		List<Item> items = ObjectifyService.ofy().load().type(Item.class).limit(50).list();
-		return ItemListConverter.from(items).toBookList();
+		return BookListBuilder.from(items).baseUri(uriInfo.getAbsolutePath()).build();
 	}
 
 	@GET
@@ -74,16 +70,24 @@ public class BooksResource {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Book getBook(@PathParam("id") Long id) {
 		Item item = ObjectifyService.ofy().load().type(Item.class).id(id).now();
-		return ItemConverter.from(item).toBook();
+		return BookBuilder.from(item).baseUri(uriInfo.getAbsolutePath()).build();
 	}
 
 	@POST
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response create(Book entity, @Context UriInfo uriInfo) throws IOException {
+	public Response create(Book entity) throws IOException {
+
 		Preconditions.checkNotBlank(entity.getTitle(), "invalid property : book.title");
+
+		if (entity.getId() != null) {
+			// liberal approach ;)
+			Book book = update(entity);
+			return Response.created(book.getUri()).build();
+		}
+
 		Book book = saveBook(entity);
-		URI newUri = URI.create(uriInfo.getPath() + "/" + book.getId());
-		return Response.created(newUri).build();
+
+		return Response.created(book.getUri()).build();
 	}
 
 	@PUT
@@ -100,4 +104,5 @@ public class BooksResource {
 		Key<Item> key = ObjectifyService.ofy().save().entity(item).now();
 		return getBook(key.getId());
 	}
+
 }

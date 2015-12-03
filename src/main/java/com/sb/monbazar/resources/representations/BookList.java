@@ -1,6 +1,7 @@
 package com.sb.monbazar.resources.representations;
 
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -31,7 +32,7 @@ public class BookList {
         private Long id;
         private String title = "";
         private String author = "";
-        private String uri = "";
+        private URI uri;
 
         public Long getId() {
             return id;
@@ -57,11 +58,11 @@ public class BookList {
             this.author = author;
         }
 
-        public String getUri() {
+        public URI getUri() {
             return uri;
         }
 
-        public void setUri(String uri) {
+        public void setUri(URI uri) {
             this.uri = uri;
         }
 
