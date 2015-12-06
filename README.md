@@ -24,8 +24,6 @@ To see all the available goals for the App Engine plugin, run
     mvn help:describe -Dplugin=appengine
 
 Could come next :
-    simplify api implementation
-    use xeditable forms
     test angular js
     test api (jersey-test-framework ?, jersey-tests ?, swagger ?)
      jersey-server-linking ?

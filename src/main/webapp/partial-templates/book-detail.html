@@ -1,10 +1,39 @@
+<form editable-form name="bookForm" class="form-horizontal" onaftersave="saveBook()">
 
-<div class="page-header">
-	<h1 editable-text="book.title" onaftersave="updateBook()">{{book.title}}</h1>
-</div>
+	<div class="container-fluid">
+		<h1 editable-text="book.title">{{book.title}}</h1>
 
-<p>{{book.author}}</p>
+		<div class="row">
+			<div class="col-sm-2">
+				<p>Author</p>
+			</div>
+			<div class="col-sm-10">
+				<span class="lead" editable-text="book.author">{{book.author}}</span>
+			</div>
+		</div>
+	</div>
 
-<a class="btn btn-default" role="button" href="#/books/"> « Back to list </a>
-<a class="btn btn-default" role="button" href="#/books/{{book.id}}/edit"> Edit » </a>
+
+	<div class="form-actions">
+      <span ng-show="!bookForm.$visible">
+		<a class="btn btn-default" role="button" href="#/books/">
+			« Back to list
+		</a>
+		<!-- button to show form -->
+		<button type="button" class="btn btn-default" ng-click="bookForm.$show()">
+			Edit
+		</button>
+	  </span>
+		<!-- buttons to submit / cancel form -->
+      <span ng-show="bookForm.$visible">
+        <button type="submit" class="btn btn-primary" ng-disabled="bookForm.$waiting">
+			Save
+		</button>
+        <button type="button" class="btn btn-default" ng-disabled="bookForm.$waiting" ng-click="bookForm.$cancel()">
+			Cancel
+		</button>
+      </span>
+	</div>
+
+</form>
 

@@ -76,17 +76,7 @@ public class BooksResource {
 	@POST
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response create(Book entity) throws IOException {
-
-		Preconditions.checkNotBlank(entity.getTitle(), "invalid property : book.title");
-
-		if (entity.getId() != null) {
-			// liberal approach ;)
-			Book book = update(entity);
-			return Response.created(book.getUri()).build();
-		}
-
-		Book book = saveBook(entity);
-
+		Book book = update(entity);
 		return Response.created(book.getUri()).build();
 	}
 
@@ -94,12 +84,12 @@ public class BooksResource {
 	@Path("/{id}")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Book update(Book entity) throws IOException {
-		Preconditions.checkNotNull(entity.getId(), "invalid property : book.id");
-		Preconditions.checkNotBlank(entity.getTitle(), "invalid property : book.title");
+		Preconditions.checkNotNull(entity.getId(), "book.id must be set");
 		return saveBook(entity);
 	}
 
 	private Book saveBook(Book entity) {
+		Preconditions.checkNotBlank(entity.getTitle(), "book.title must be set");
 		Item item = BookConverter.from(entity).toItem();
 		Key<Item> key = ObjectifyService.ofy().save().entity(item).now();
 		return getBook(key.getId());

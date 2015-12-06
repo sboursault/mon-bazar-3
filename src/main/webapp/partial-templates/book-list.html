@@ -4,7 +4,8 @@
 		<div class="navbar-form">
 			<div class="input-group">
 				<input class="form-control" type="text" placeholder="Rechercher"
-					ng-model="query.title"></input> <span class="input-group-btn">
+					ng-model="query.title"></input>
+				<span class="input-group-btn">
 					<button class="btn btn-primary" ng-click="query.title=''">X</button>
 				</span>
 			</div>
@@ -13,11 +14,9 @@
 </div>
 <div class="container">
 	<p ng-repeat="book in books | filter:query | orderBy:'title'">
-	
 		{{book.title}} <span ><a class="btn btn-default" role="button"
 			href="#/books/{{book.id}}"> » </a><!-- pull-right --></span>
 	</p>
 </div>
 
-<a class="btn btn-default" role="button" href="#/books/new"> Ajouter
-	un livre » </a>
+<a class="btn btn-default" role="button" href="#/books/new"> New book » </a>

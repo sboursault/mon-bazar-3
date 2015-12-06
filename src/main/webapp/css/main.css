@@ -145,8 +145,21 @@ Pour les anciens navigateurs qui ne supportent pas cette propriété, l’ombre 
 
 
 
+/* adds border over fluid grid cells */
+.container-fluid .row {
+    border: 1px solid #ddd;
+    padding: 8px;
+ /*
 
 
+  background-color: #f1f1f1;
+ padding: 15px;*/
+}
+
+/* for the xeditor fields to take all the width available */
+.editable-wrap {
+    width: 100%;
+}
 
 
 

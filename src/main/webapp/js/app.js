@@ -12,7 +12,7 @@ bazarApp.config([ '$routeProvider', function($routeProvider) {
 		templateUrl : 'partial-templates/book-list.html',
 		controller : 'BookListController'
 	}).when('/books/new', {
-		templateUrl : 'partial-templates/book-form.html',
+		templateUrl : 'partial-templates/book-detail.html',
 		controller : 'BookDetailController'
 	}).when('/books/:bookId', {
 		templateUrl : 'partial-templates/book-detail.html',
