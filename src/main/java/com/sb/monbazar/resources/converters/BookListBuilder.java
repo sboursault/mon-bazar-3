@@ -36,20 +36,10 @@ public class BookListBuilder {
 
 		BookList targetList = new BookList();
 		for (Item item : items) {
-			targetList.add(convertToBookSummary(item));
+			targetList.add(BookBuilder.from(item).baseUri(baseUri).build());
 		}
 		return targetList;
 	}
 
-	private BookList.BookSummary convertToBookSummary(Item item) {
-		BookList.BookSummary target = new BookList.BookSummary();
-		target.setId(item.getId());
-		target.setTitle(item.getTitle());
-		target.setAuthor(item.getAuthor());
-		target.setUri(UriBuilder.fromUri(baseUri).
-				path("{id}").
-				build(item.getId()));
-		return target;
-	}
 }
  

@@ -90,7 +90,7 @@ public class BooksResource {
 
 	private Book saveOrUpdate(Book entity) {
 		Preconditions.checkNotBlank(entity.getTitle(), "book.title must be set");
-		Item item = BookConverter.from(entity).toItem();
+		Item item = BookToItemConverter.source(entity).convert();
 		Key<Item> key = ObjectifyService.ofy().save().entity(item).now();
 		return getBook(key.getId());
 	}

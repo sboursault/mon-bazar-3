@@ -36,7 +36,6 @@ public class BookBuilder {
 		target.setUri(UriBuilder.fromUri(baseUri).
 				path("{id}").
 				build(item.getId()));
-
 		return target;
 	}
 }

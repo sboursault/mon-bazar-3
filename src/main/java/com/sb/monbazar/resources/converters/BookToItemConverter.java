@@ -3,20 +3,20 @@ package com.sb.monbazar.resources.converters;
 import com.sb.monbazar.core.model.Item;
 import com.sb.monbazar.resources.representations.Book;
 
-public class BookConverter {
+public class BookToItemConverter {
 
 	Book source;
 
-	public BookConverter(Book source) {
+	public BookToItemConverter(Book source) {
 		super();
 		this.source = source;
 	}
 
-	public static BookConverter from(Book source) {
-		return new BookConverter(source);
+	public static BookToItemConverter source(Book source) {
+		return new BookToItemConverter(source);
 	}
 
-	public Item toItem() {
+	public Item convert() {
 		return new Item().id(source.getId()).title(source.getTitle())
 				.author(source.getAuthor());
 	}
