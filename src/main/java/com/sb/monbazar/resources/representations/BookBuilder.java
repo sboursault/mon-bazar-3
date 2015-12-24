@@ -1,7 +1,6 @@
-package com.sb.monbazar.resources.converters;
+package com.sb.monbazar.resources.representations;
 
 import com.sb.monbazar.core.model.Item;
-import com.sb.monbazar.resources.representations.Book;
 import com.sb.monbazar.utils.Preconditions;
 
 import javax.ws.rs.core.UriBuilder;
@@ -15,10 +14,6 @@ public class BookBuilder {
 	public BookBuilder(Item item) {
 		super();
 		this.item = item;
-	}
-
-	public static BookBuilder from(Item item) {
-		return new BookBuilder(item);
 	}
 
 	public BookBuilder baseUri(URI baseUri) {

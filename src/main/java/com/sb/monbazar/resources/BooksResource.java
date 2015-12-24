@@ -62,7 +62,9 @@ public class BooksResource {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public BookList getAllBooks() {
 		List<Item> items = ObjectifyService.ofy().load().type(Item.class).limit(50).list();
-		return BookListBuilder.from(items).baseUri(uriInfo.getAbsolutePath()).build();
+		return new BookListBuilder(items)
+				.baseUri(uriInfo.getAbsolutePath())
+				.convert();
 	}
 
 	@GET
@@ -70,7 +72,9 @@ public class BooksResource {
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Book getBook(@PathParam("id") Long id) {
 		Item item = ObjectifyService.ofy().load().type(Item.class).id(id).now();
-		return BookBuilder.from(item).baseUri(uriInfo.getAbsolutePath()).build();
+		return new BookBuilder(item)
+				.baseUri(uriInfo.getAbsolutePath())
+				.build();
 	}
 
 	@POST
@@ -90,7 +94,7 @@ public class BooksResource {
 
 	private Book saveOrUpdate(Book entity) {
 		Preconditions.checkNotBlank(entity.getTitle(), "book.title must be set");
-		Item item = BookToItemConverter.source(entity).convert();
+		Item item = new BookToItemConverter(entity).convert();
 		Key<Item> key = ObjectifyService.ofy().save().entity(item).now();
 		return getBook(key.getId());
 	}

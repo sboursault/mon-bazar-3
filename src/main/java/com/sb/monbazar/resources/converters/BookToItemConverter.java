@@ -17,7 +17,9 @@ public class BookToItemConverter {
 	}
 
 	public Item convert() {
-		return new Item().id(source.getId()).title(source.getTitle())
+		return new Item()
+				.id(source.getId())
+				.title(source.getTitle())
 				.author(source.getAuthor());
 	}
 }
