@@ -1,1 +1,1 @@
-<jsp:include page="layout-template.html" />
+<jsp:include page="index.html" />

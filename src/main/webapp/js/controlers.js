@@ -1,18 +1,19 @@
 
-var bookControllers = angular.module('bookControllers', []);
+var bookControllers = angular.module('bookControllers', [])
 
-// without routing
-/*bookControllers.controller('BookListController', function($scope, $http) {
-        $http.get('api/books').success(function(data) { $scope.books = data });
-});*/
+    // without routing
+    /*.controller('BookListController', function($scope, $http) {
+            $http.get('api/books').success(function(data) { $scope.books = data });
+    });*/
 
-// with routing
-bookControllers.controller('BookListController', [ '$scope', '$http',
+    // with routing
+    .controller('BookListController', [ '$scope', '$http',
         function($scope, $http) {
-            $http.get('api/books').success(function(data) { $scope.books = data.books });
-        } ]);
+            $http.get(apiBaseUrl + 'books')
+                .success( function(data) { $scope.books = data.books } );
+        } ])
 
-bookControllers.controller('BookDetailController', [ '$scope', '$routeParams',
+    .controller('BookDetailController', [ '$scope', '$routeParams',
 		'Book', function($scope, $routeParams, Book) {
 
 			$scope.saveBook = function() {

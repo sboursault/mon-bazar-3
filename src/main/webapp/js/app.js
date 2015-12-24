@@ -1,3 +1,6 @@
+var apiBaseUrl = "http://mon-bazar.appspot.com/api/";
+// TODO : poluting the document scope with apiBaseUrl. We probably can do better.
+
 // declare bazarApp module with its dependencies
 var bazarApp = angular.module('bazarApp', [
     'ngRoute',
