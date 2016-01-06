@@ -1,6 +1,5 @@
 package com.sb.monbazar.resources.representations;
 
-import com.sb.monbazar.core.model.Item;
 import com.sb.monbazar.utils.Preconditions;
 
 import javax.ws.rs.core.UriBuilder;
@@ -8,12 +7,12 @@ import java.net.URI;
 
 public class BookBuilder {
 
-	private  Item item;
+	private com.sb.monbazar.core.model.Book model;
 	private URI baseUri;
 
-	public BookBuilder(Item item) {
+	public BookBuilder(com.sb.monbazar.core.model.Book model) {
 		super();
-		this.item = item;
+		this.model = model;
 	}
 
 	public BookBuilder baseUri(URI baseUri) {
@@ -25,12 +24,12 @@ public class BookBuilder {
 		Preconditions.checkNotNull(baseUri, "baseUri must be set");
 
 		Book target = new Book();
-		target.setId(item.getId());
-		target.setTitle(item.getTitle());
-		target.setAuthor(item.getAuthor());
+		target.setId(model.getId());
+		target.setTitle(model.getTitle());
+		target.setAuthor(model.getAuthor());
 		target.setUri(UriBuilder.fromUri(baseUri).
 				path("{id}").
-				build(item.getId()));
+				build(model.getId()));
 		return target;
 	}
 }

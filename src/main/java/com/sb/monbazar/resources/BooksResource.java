@@ -40,16 +40,18 @@
 package com.sb.monbazar.resources;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.List;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
-import com.sb.monbazar.core.model.Item;
+import com.sb.monbazar.core.model.*;
+import com.sb.monbazar.repositories.BookRepository;
 import com.sb.monbazar.resources.converters.*;
 import com.sb.monbazar.resources.representations.*;
+import com.sb.monbazar.resources.representations.Book;
 import com.sb.monbazar.utils.Preconditions;
 
 
@@ -58,11 +60,13 @@ public class BooksResource {
 
 	@Context UriInfo uriInfo;
 
+	// TODO inject instead of instanciante
+	BookRepository bookRepository = new BookRepository();
+
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public BookList getAllBooks() {
-		List<Item> items = ObjectifyService.ofy().load().type(Item.class).limit(50).list();
-		return new BookListBuilder(items)
+		return new BookListBuilder(bookRepository.search())
 				.baseUri(uriInfo.getAbsolutePath())
 				.convert();
 	}
@@ -71,32 +75,32 @@ public class BooksResource {
 	@Path("/{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Book getBook(@PathParam("id") Long id) {
-		Item item = ObjectifyService.ofy().load().type(Item.class).id(id).now();
-		return new BookBuilder(item)
+		return new BookBuilder(bookRepository.getBook(id))
 				.baseUri(uriInfo.getAbsolutePath())
 				.build();
 	}
 
 	@POST
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Response create(Book entity) throws IOException {
-		Book book = saveOrUpdate(entity);
-		return Response.created(book.getUri()).build();
+	public Response create(Book representation) throws IOException {
+		com.sb.monbazar.core.model.Book model = new BookRepresentationToModel(representation).convert();
+		model = bookRepository.saveOrUpdate(model);
+		URI uri = new BookBuilder(model)
+				.baseUri(uriInfo.getAbsolutePath())
+				.build().getUri();
+		return Response.created(uri).build();
 	}
 
 	@PUT
 	@Path("/{id}")
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
-	public Book update(Book entity) throws IOException {
-		Preconditions.checkNotNull(entity.getId(), "book.id must be set");
-		return saveOrUpdate(entity);
+	public Book update(Book representation) throws IOException {
+		Preconditions.checkNotNull(representation.getId(), "book.id must be set");
+		com.sb.monbazar.core.model.Book model = new BookRepresentationToModel(representation).convert();
+		bookRepository.saveOrUpdate(model);
+		return getBook(representation.getId());
 	}
 
-	private Book saveOrUpdate(Book entity) {
-		Preconditions.checkNotBlank(entity.getTitle(), "book.title must be set");
-		Item item = new BookToItemConverter(entity).convert();
-		Key<Item> key = ObjectifyService.ofy().save().entity(item).now();
-		return getBook(key.getId());
-	}
+
 
 }

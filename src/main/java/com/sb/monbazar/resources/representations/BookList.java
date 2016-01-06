@@ -1,7 +1,6 @@
 package com.sb.monbazar.resources.representations;
 
 import javax.xml.bind.annotation.XmlRootElement;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 
