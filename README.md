@@ -26,7 +26,20 @@ To see all the available goals for the App Engine plugin, run
 Could come next :
     test angular js
     test api (jersey-test-framework ?, jersey-tests ?, swagger ?)
-     jersey-server-linking ?
+    test with groovy
+    jersey-server-linking ?
+    consumer based tests
+    test "be liberal in what you accept" (use xpath ?)
+    cdi
     use swagger ?
     use graddle ?
+rest client with circuit breaker
+log aggregation
+correlation id to follow calls from one service to another
+Domain driven design
+node
+authentication
+spring roo
+spring boot
+
 

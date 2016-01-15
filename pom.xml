@@ -26,6 +26,15 @@
 	</prerequisites>
 
 	<dependencies>
+
+
+		<!--<dependency>
+			<groupId>javax.enterprise</groupId>
+			<artifactId>cdi-api</artifactId>
+			<version>1.2</version>
+			<scope>provided</scope>
+		</dependency-->
+
 		<!-- Compile/runtime dependencies -->
 		<dependency>
 			<groupId>com.google.appengine</groupId>
@@ -40,12 +49,11 @@
 		</dependency>
 	
 		<dependency>
-		    <!-- added to fix "A message body writer for ... and MIME media type application/json was not found" -->
 		    <groupId>com.sun.jersey</groupId>
 		    <artifactId>jersey-json</artifactId>
 		    <version>${jersey.version}</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
@@ -58,13 +66,11 @@
 			<version>1.2</version>
 		</dependency>
 
-		<!-- [START Objectify_Dependencies] -->
 		<dependency>
 			<groupId>com.googlecode.objectify</groupId>
 			<artifactId>objectify</artifactId>
 			<version>${objectify.version}</version>
 		</dependency>
-		<!-- [END Objectify_Dependencies] -->
 
 		<!-- Test Dependencies -->
 		<dependency>
@@ -79,6 +85,13 @@
 			<version>2.0.2-beta</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.jersey-test-framework</groupId>
+			<artifactId>jersey-test-framework-grizzly2</artifactId>
+			<version>${jersey.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 		<dependency>
 			<groupId>com.google.appengine</groupId>
 			<artifactId>appengine-testing</artifactId>

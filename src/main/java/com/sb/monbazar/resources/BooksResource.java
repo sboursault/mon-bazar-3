@@ -43,10 +43,13 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
+import javax.annotation.Resource;
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
 import com.googlecode.objectify.ObjectifyService;
+import static com.sb.monbazar.Manager.*;
 import com.sb.monbazar.core.model.*;
 import com.sb.monbazar.repositories.BookRepository;
 import com.sb.monbazar.resources.converters.*;
@@ -60,14 +63,13 @@ public class BooksResource {
 
 	@Context UriInfo uriInfo;
 
-	// TODO inject instead of instanciante
-	BookRepository bookRepository = new BookRepository();
+	/*@Inject*/	BookRepository bookRepository = new BookRepository();
 
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public BookList getAllBooks() {
-		return new BookListBuilder(bookRepository.search())
-				.baseUri(uriInfo.getAbsolutePath())
+		return new BookListBuilder(getBookRepository().search())
+				.baseUri(getBaseUri())
 				.convert();
 	}
 
@@ -75,8 +77,8 @@ public class BooksResource {
 	@Path("/{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Book getBook(@PathParam("id") Long id) {
-		return new BookBuilder(bookRepository.getBook(id))
-				.baseUri(uriInfo.getAbsolutePath())
+		return new BookBuilder(getBookRepository().getBook(id))
+				.baseUri(getBaseUri())
 				.build();
 	}
 
@@ -84,9 +86,9 @@ public class BooksResource {
 	@Consumes({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Response create(Book representation) throws IOException {
 		com.sb.monbazar.core.model.Book model = new BookRepresentationToModel(representation).convert();
-		model = bookRepository.saveOrUpdate(model);
+		model = getBookRepository().saveOrUpdate(model);
 		URI uri = new BookBuilder(model)
-				.baseUri(uriInfo.getAbsolutePath())
+				.baseUri(getBaseUri())
 				.build().getUri();
 		return Response.created(uri).build();
 	}
@@ -97,10 +99,12 @@ public class BooksResource {
 	public Book update(Book representation) throws IOException {
 		Preconditions.checkNotNull(representation.getId(), "book.id must be set");
 		com.sb.monbazar.core.model.Book model = new BookRepresentationToModel(representation).convert();
-		bookRepository.saveOrUpdate(model);
+		getBookRepository().saveOrUpdate(model);
 		return getBook(representation.getId());
 	}
 
-
+	private URI getBaseUri() {
+		return uriInfo.getBaseUriBuilder().path("/books").build();
+	}
 
 }
