@@ -1,8 +1,8 @@
 package com.sb.monbazar.repositories;
 
-import com.google.appengine.repackaged.com.google.common.base.Function;
-import com.google.appengine.repackaged.com.google.common.collect.Collections2;
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.Lists;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.ObjectifyService;
 import com.sb.monbazar.core.model.Book;

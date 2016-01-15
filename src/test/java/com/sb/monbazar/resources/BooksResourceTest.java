@@ -1,35 +1,41 @@
 package com.sb.monbazar.resources;
 
-import com.google.appengine.repackaged.com.google.common.collect.Lists;
+import com.google.common.collect.Lists;
 import com.sb.monbazar.Manager;
 import com.sb.monbazar.core.model.Book;
 import com.sb.monbazar.repositories.BookRepository;
-import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.test.framework.JerseyTest;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.JsonParser;
+
+import static com.sb.monbazar.matchers.JsonMatchers.*;
+import static org.junit.Assert.*;
+
+
+import com.sun.jersey.test.framework.WebAppDescriptor;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.util.JSONPObject;
-import org.hamcrest.Description;
-import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
-import org.junit.Assert;
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.Matchers;
+import org.hamcrest.collection.IsMapContaining;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
+
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import javax.ws.rs.core.MediaType;
-import java.io.IOException;
-import java.net.URI;
-import java.util.Map;
 
 public class BooksResourceTest extends JerseyTest {
 
     public BooksResourceTest() {
-        super("com.sb.monbazar.resources");
+        super(new WebAppDescriptor.Builder("com.sb.monbazar.resources")
+                .initParam("com.sun.jersey.spi.container.ContainerResponseFilters",
+                        "com.sb.monbazar.resources.responsefilters.CrossOriginResourceSharingResponseFilter")
+                .build());
     }
 
     @Mock
@@ -41,16 +47,8 @@ public class BooksResourceTest extends JerseyTest {
         Manager.setBookRepository(bookRepository);
     }
 
-    /*When testing a REST resource, there are usually a few orthogonal responsibilities the tests should focus on:
-
-        the HTTP response code
-        other HTTP headers in the response
-        the payload (JSON, XML)*/
-
-    // RestAssured.given()
-
     @Test
-    public void fetchesSeveralBooks() throws Exception {
+    public void fetchABookList() throws Exception {
 
         // given
         when(bookRepository.search()).thenReturn(Lists.newArrayList(
@@ -59,12 +57,13 @@ public class BooksResourceTest extends JerseyTest {
         ));
 
         // when
-        String responseMsg = resource().path("books")
+        ClientResponse response = resource()
+                .path("books")
                 .accept(MediaType.APPLICATION_JSON_TYPE)
-                .get(String.class);
+                .get(ClientResponse.class);
 
         // then
-        String json = "" +
+        String expected = "" +
                 "{\"books\":[" +
                 "    {\"id\":\"1000\"," +
                 "        \"author\":\"Ennis\"," +
@@ -76,11 +75,13 @@ public class BooksResourceTest extends JerseyTest {
                 "        \"uri\":\"http://localhost:9998/books/1005\"}" +
                 "]}";
 
-        Assert.assertThat(responseMsg, equalToJson(json));
+        assertThat(response, hasStatus(200));
+        assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
+        assertThat(response, hasJsonBody(expected));
     }
 
     @Test
-    public void fetchesABookfromItsId() throws Exception {
+    public void fetchABookfromAnId() throws Exception {
 
         // given
         when(bookRepository.getBook(1000)).thenReturn(
@@ -88,40 +89,48 @@ public class BooksResourceTest extends JerseyTest {
         );
 
         // when
-        String responseMsg = resource()//.path("books/1000")
-                .uri(URI.create("books/100O"))
+        ClientResponse response = resource()
+                .path("books/1000")
                 .accept(MediaType.APPLICATION_JSON_TYPE)
-                .get(String.class);
+                .get(ClientResponse.class);
 
         // then
-        String json = "" +
+        String expected = "" +
                 "{\"id\":\"1000\"," +
                 "    \"author\":\"Ennis\"," +
                 "    \"title\":\"Hellblazer\"," +
                 "    \"uri\":\"http://localhost:9998/books/1000\"}";
 
-        Assert.assertThat(responseMsg, equalToJson(json));
+        assertThat(response, hasStatus(200));
+        assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
+        assertThat(response, hasJsonBody(expected));
     }
 
-    private Matcher<String> equalToJson(final String expectedValue) {
-        return new TypeSafeMatcher<String>() {
+    @Test
+    public void updateABook() throws Exception {
 
-            ObjectMapper mapper = new ObjectMapper();
+        // given
+        when(bookRepository.saveOrUpdate(any(Book.class)))
+                .thenAnswer(new ReturnsArgumentAt(0));
 
-            @Override
-            protected boolean matchesSafely(String actualValue) {
-                try {
-                    return mapper.readTree(actualValue).equals(mapper.readTree(expectedValue));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
+        String entity = "" +
+                "{\"id\":\"1000\"," +
+                "    \"author\":\"Ennis\"," +
+                "    \"title\":\"Hellblazer\"," +
+                "    \"uri\":\"http://localhost:9998/books/1000\"}";
 
-            @Override
-            public void describeTo(Description description) {
-                description.appendValue(expectedValue);
-            }
-        };
+
+        // when
+        ClientResponse response = resource()
+                .path("books/1000")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .put(ClientResponse.class, entity);
+
+        // then
+        assertThat(response, hasStatus(200));
+        assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
+        assertThat(response, hasJsonBody(entity));
     }
 
 }

@@ -21,8 +21,6 @@ import static com.googlecode.objectify.ObjectifyService.ofy;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
 import com.google.appengine.api.users.UserServiceFactory;
-import com.google.appengine.repackaged.com.google.api.client.util.Lists;
-import com.google.appengine.repackaged.com.google.common.base.Strings;
 import com.googlecode.objectify.ObjectifyService;
 import com.sb.monbazar.core.model.Item;
 

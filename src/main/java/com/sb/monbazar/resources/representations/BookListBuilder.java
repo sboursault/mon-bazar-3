@@ -21,7 +21,7 @@ public class BookListBuilder {
 		return this;
 	}
 
-	public BookList convert() {
+	public BookList build() {
 
 		Preconditions.checkNotNull(baseUri, "baseUri must be set");
 

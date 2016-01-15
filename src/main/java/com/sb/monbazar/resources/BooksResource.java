@@ -44,7 +44,6 @@ import java.net.URI;
 import java.util.List;
 
 import javax.annotation.Resource;
-import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
@@ -68,18 +67,14 @@ public class BooksResource {
 	@GET
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public BookList getAllBooks() {
-		return new BookListBuilder(getBookRepository().search())
-				.baseUri(getBaseUri())
-				.convert();
+		return representationOf(getBookRepository().search());
 	}
 
 	@GET
 	@Path("/{id}")
 	@Produces({ MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON })
 	public Book getBook(@PathParam("id") Long id) {
-		return new BookBuilder(getBookRepository().getBook(id))
-				.baseUri(getBaseUri())
-				.build();
+		return representationOf(getBookRepository().getBook(id));
 	}
 
 	@POST
@@ -87,9 +82,7 @@ public class BooksResource {
 	public Response create(Book representation) throws IOException {
 		com.sb.monbazar.core.model.Book model = new BookRepresentationToModel(representation).convert();
 		model = getBookRepository().saveOrUpdate(model);
-		URI uri = new BookBuilder(model)
-				.baseUri(getBaseUri())
-				.build().getUri();
+		URI uri = representationOf(model).getUri();
 		return Response.created(uri).build();
 	}
 
@@ -99,12 +92,24 @@ public class BooksResource {
 	public Book update(Book representation) throws IOException {
 		Preconditions.checkNotNull(representation.getId(), "book.id must be set");
 		com.sb.monbazar.core.model.Book model = new BookRepresentationToModel(representation).convert();
-		getBookRepository().saveOrUpdate(model);
-		return getBook(representation.getId());
+		model = getBookRepository().saveOrUpdate(model);
+		return representationOf(model);
 	}
 
 	private URI getBaseUri() {
 		return uriInfo.getBaseUriBuilder().path("/books").build();
+	}
+
+	private Book representationOf(com.sb.monbazar.core.model.Book model) {
+		return new BookBuilder(model)
+				.baseUri(getBaseUri())
+				.build();
+	}
+
+	private BookList representationOf(List<com.sb.monbazar.core.model.Book> models) {
+		return new BookListBuilder(models)
+				.baseUri(getBaseUri())
+				.build();
 	}
 
 }
