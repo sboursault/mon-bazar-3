@@ -1,4 +1,4 @@
-package com.sb.monbazar.matchers;
+package com.sb.monbazar.matchers.jersey;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Converter;
@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * Created by me on 16/01/16.
  */
-public class JsonMatchers {
+public class ClientResponseMatchers {
 
     public static Matcher<ClientResponse> hasJsonBody(final String expectedValue) {
         return new BaseMatcher<ClientResponse>() {
@@ -32,11 +32,12 @@ public class JsonMatchers {
             public boolean matches(Object actualValue) {
                 try {
                     ClientResponse actualResponse = (ClientResponse) actualValue;
-                    actualJsonBody = mapper.readTree(actualResponse.getEntityInputStream());
                     expectedJsonBody = mapper.readTree(expectedValue);
+                    actualJsonBody = mapper.readTree(actualResponse.getEntityInputStream());
                     return actualJsonBody.equals(expectedJsonBody);
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    e.printStackTrace();
+                    return false;
                 }
             }
 

@@ -7,21 +7,16 @@ import com.sb.monbazar.repositories.BookRepository;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.test.framework.JerseyTest;
 
-import static com.sb.monbazar.matchers.JsonMatchers.*;
+import static com.sb.monbazar.matchers.jersey.ClientResponseMatchers.*;
 import static org.junit.Assert.*;
 
 
 import com.sun.jersey.test.framework.WebAppDescriptor;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matchers;
-import org.hamcrest.collection.IsMapContaining;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import static org.mockito.Mockito.*;
 
-import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
 import org.mockito.invocation.InvocationOnMock;
@@ -32,6 +27,7 @@ import javax.ws.rs.core.MediaType;
 public class BooksResourceTest extends JerseyTest {
 
     public BooksResourceTest() {
+	    // the WebAppDescriptor should follow the definition from the web.xml
         super(new WebAppDescriptor.Builder("com.sb.monbazar.resources")
                 .initParam("com.sun.jersey.spi.container.ContainerResponseFilters",
                         "com.sb.monbazar.resources.responsefilters.CrossOriginResourceSharingResponseFilter")
@@ -81,7 +77,7 @@ public class BooksResourceTest extends JerseyTest {
     }
 
     @Test
-    public void fetchABookfromAnId() throws Exception {
+    public void fetchABookUsingJson() throws Exception {
 
         // given
         when(bookRepository.getBook(1000)).thenReturn(
@@ -104,6 +100,32 @@ public class BooksResourceTest extends JerseyTest {
         assertThat(response, hasStatus(200));
         assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
         assertThat(response, hasJsonBody(expected));
+    }
+
+    @Test
+    public void fetchABookUsingXml() throws Exception {
+
+        // given
+        when(bookRepository.getBook(1000)).thenReturn(
+                new Book().id(1000).author("Ennis").title("Hellblazer")
+        );
+
+        // when
+        ClientResponse response = resource()
+                .path("books/1000")
+                .accept(MediaType.APPLICATION_XML)
+                .get(ClientResponse.class);
+
+        // then
+        String expected = "" +
+                "{\"id\":\"1000\"," +
+                "    \"author\":\"Ennis\"," +
+                "    \"title\":\"Hellblazer\"," +
+                "    \"uri\":\"http://localhost:9998/books/1000\"}";
+
+        assertThat(response, hasStatus(200));
+        assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
+        //assertThat(response, hasXmlBody(expected));
     }
 
     @Test
@@ -131,6 +153,36 @@ public class BooksResourceTest extends JerseyTest {
         assertThat(response, hasStatus(200));
         assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
         assertThat(response, hasJsonBody(entity));
+    }
+
+    @Test
+    public void createABook() throws Exception {
+
+        // given
+        when(bookRepository.saveOrUpdate(any(Book.class)))
+                .thenAnswer(new Answer<Book>() {
+                    @Override
+                    public Book answer(InvocationOnMock invocationOnMock) throws Throwable {
+                        return ((Book) invocationOnMock.getArguments()[0]).id(1017);
+                    }
+                });
+
+        String entity = "" +
+                "{\"author\":\"Ennis\"," +
+                "    \"title\":\"Hellblazer\"}";
+
+
+        // when
+        ClientResponse response = resource()
+                .path("books")
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .post(ClientResponse.class, entity);
+
+        // then
+        assertThat(response, hasStatus(201));
+        assertThat(response, hasHeader("Access-Control-Allow-Origin", "*"));
+        assertThat(response, hasHeader("Location", "http://localhost:9998/books/1017"));
     }
 
 }
